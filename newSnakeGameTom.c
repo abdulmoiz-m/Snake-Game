@@ -4,6 +4,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 
 //used to create snake peices and trophie objects
 typedef struct drawableObj{
@@ -54,7 +55,8 @@ int main () {
     refresh();
     curs_set(false); // Don't display a cursor
     noecho(); // Don't echo any keypresses
-    keypad(stdscr, true); // change migh be needed
+    keypad(stdscr, true);
+    signal(SIGINT, exitGame); //catch the interrupt signal
 
     initializeGame(); //initialize the game
 
