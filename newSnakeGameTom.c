@@ -15,8 +15,8 @@ enum Direction {
     // assigning num. to directions to detect reverse direction
     // change in direction is illegal if sum is 1 or 5, game over.
     up = 0,
-    down = 1, 
-    left = 2, 
+    down = 1,
+    left = 2,
     right = 3
 } currentDirection;
 
@@ -46,6 +46,7 @@ chtype getCharAt(int,int);
 bool gameOver, trophyPresent, winGame;
 WINDOW * boardWin;
 int xMax, yMax, snakeSize = 3, refreshDelay = 400, randNumber, trophy_time;
+time_t trophyCreationTime;
 dObj prevTrophy; // keep track of prev trophy
 
 int main () {
@@ -57,7 +58,7 @@ int main () {
     keypad(boardWin, true); // change migh be needed
 
     initializeGame(); //initialize the game
-    
+
     while (!gameOver) {
         checkInput(); //only checks input and sets direction
         updateState(); // updates snake peices and handles all collisons and win game
@@ -79,7 +80,7 @@ void initializeGame() {
     gameOver = false;
     winGame = false;
     trophyPresent = false;
-    
+
     //initializing a snake with three characters
     currentDirection = rand()%4; //sets a random direction 0 - 3;
     dObj nextSnakePeice = {BOARD_ROWS/2, (BOARD_COLUMNS/2)-2, '@'};
@@ -106,7 +107,7 @@ void initializeGame() {
 //displays the snake pit
 void board() {
     getmaxyx(stdscr, yMax, xMax); //get dimentions of terminal
-    
+
     //creating a new window to display the board
     boardWin = newwin(BOARD_ROWS, BOARD_COLUMNS, (yMax/2)-(BOARD_ROWS/2), (xMax/2)-(BOARD_COLUMNS/2));
     box(boardWin, 0, 0); //box representing the border
@@ -123,9 +124,9 @@ void displayObj(dObj obj) {
     displayCharAt(obj.y, obj.x, obj.ch);
 }
 
-void checkInput() { 
+void checkInput() {
     chtype input = wgetch(boardWin);
-    
+
     switch (input) {
         case KEY_UP:
         case 'w':
@@ -151,6 +152,7 @@ void checkInput() {
 dObj trophy(int y, int x) { //used to create trophy object
     randNumber = (rand()%9)+1;
     trophy_time = (rand()%9)+1;
+    trophyCreationTime = time(NULL);
     dObj trophy = {y, x, (randNumber + '0')};
     return trophy;
 }
@@ -179,9 +181,13 @@ void updateState() {
     }
     displayObj(nextSnakePeice);
     addSnakePiece(nextSnakePeice);
-    
-    
-    
+
+    //Check the elapsed time from trophy creation against trophy lifespan
+    if((time(NULL) - trophyCreationTime) >= trophy_time){
+      displayObj(empty(prevTrophy.y, prevTrophy.x));
+      trophyPresent = false;
+    }
+
     //if trophy gets eaten by the snake
     if (!trophyPresent) {
         int y,x;
@@ -191,7 +197,7 @@ void updateState() {
     }
 
     refreshDelay -= snakeSize*10; //increase snake speed proportionl to size
-    
+
     if (snakeSize >= BOARD_HALF_PERIMETER) {
         winGame = true;
         gameOver = true;
@@ -227,7 +233,7 @@ dObj* dequeue( ) {
 // Queues a object at the back
 void enqueue( dObj object )
 {
-   dObj *newobject   = (dObj*)  malloc( sizeof( object ) ); 
+   dObj *newobject   = (dObj*)  malloc( sizeof( object ) );
    node *newnode = (node*) malloc( sizeof( node ) );
 
    newobject->x = object.x;
@@ -328,7 +334,7 @@ void displayMessage(char* str) { //displays a generic message on board
     refresh();
 }
 
-void exitGame() { 
+void exitGame() {
     displayMessage("Exiting");
     usleep(1300000);
     endwin();
