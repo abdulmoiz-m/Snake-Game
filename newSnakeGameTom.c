@@ -44,7 +44,6 @@ chtype getCharAt(int,int);
 #define BOARD_HALF_PERIMETER (LINES + COLS - 3)
 
 bool gameOver, trophyPresent, winGame;
-WINDOW * boardWin;
 int xMax, yMax, snakeSize = 3, refreshDelay = 400, randNumber, trophy_time;
 time_t trophyCreationTime;
 dObj prevTrophy; // keep track of prev trophy
@@ -55,7 +54,7 @@ int main () {
     refresh();
     curs_set(false); // Don't display a cursor
     noecho(); // Don't echo any keypresses
-    keypad(boardWin, true); // change migh be needed
+    keypad(stdscr, true); // change migh be needed
 
     initializeGame(); //initialize the game
 
@@ -109,15 +108,15 @@ void board() {
     getmaxyx(stdscr, yMax, xMax); //get dimentions of terminal
 
     //creating a new window to display the board
-    boardWin = newwin(BOARD_ROWS, BOARD_COLUMNS, (yMax/2)-(BOARD_ROWS/2), (xMax/2)-(BOARD_COLUMNS/2));
-    box(boardWin, 0, 0); //box representing the border
-    wrefresh(boardWin);
-    wtimeout(boardWin, refreshDelay); //how fast screen is refreshed(500 ms)
+    stdscr = newwin(BOARD_ROWS, BOARD_COLUMNS, (yMax/2)-(BOARD_ROWS/2), (xMax/2)-(BOARD_COLUMNS/2));
+    box(stdscr, 0, 0); //box representing the border
+    wrefresh(stdscr);
+    wtimeout(stdscr, refreshDelay); //how fast screen is refreshed(500 ms)
 }
 
 //displays a character on the board at specified position
 void displayCharAt(int yPos, int xPos, chtype ch) {
-    mvwaddch(boardWin, yPos, xPos, ch);
+    mvwaddch(stdscr, yPos, xPos, ch);
 }
 
 void displayObj(dObj obj) {
@@ -125,7 +124,7 @@ void displayObj(dObj obj) {
 }
 
 void checkInput() {
-    chtype input = wgetch(boardWin);
+    chtype input = wgetch(stdscr);
 
     switch (input) {
         case KEY_UP:
@@ -205,7 +204,7 @@ void updateState() {
 }
 
 void updateDisplay() {
-    wrefresh(boardWin);
+    wrefresh(stdscr);
 }
 
 // --------------------------------------------------------------------------
@@ -320,7 +319,7 @@ dObj empty(int y, int x) { //used to empty out a spot on the board
 }
 
 chtype getCharAt(int y, int x) { //gets characters present at specified posiiton on board
-    return mvwinch(boardWin, y, x);
+    return mvwinch(stdscr, y, x);
 }
 void getEmptyCoords(int *y, int *x) { //gets a set of random empty coords for trophy
     while (getCharAt(*y = rand() % (BOARD_ROWS-1), *x = rand() % (BOARD_COLUMNS-1)) != ' ');
