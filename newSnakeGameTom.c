@@ -49,6 +49,11 @@ int xMax, yMax, snakeSize = 3, refreshDelay = 400, randNumber, trophy_time;
 time_t trophyCreationTime;
 dObj prevTrophy; // keep track of prev trophy
 
+/**
+ * Function: main()
+ * Purpose:
+ * Author:
+**/
 int main () {
     initscr(); //initialize ncurses library
     //clear();
@@ -75,6 +80,11 @@ int main () {
     exitGame();
 }
 
+/**
+ * Function: initializeGame()
+ * Purpose:
+ * Author:
+**/
 void initializeGame() {
     board(); //initialize the snake pit
     srand(time(NULL));
@@ -105,7 +115,11 @@ void initializeGame() {
     }
 }
 
-//displays the snake pit
+/**
+ * Function: board()
+ * Purpose: displays the snake pit
+ * Author:
+**/
 void board() {
     getmaxyx(stdscr, yMax, xMax); //get dimentions of terminal
 
@@ -116,15 +130,29 @@ void board() {
     wtimeout(stdscr, refreshDelay); //how fast screen is refreshed(500 ms)
 }
 
-//displays a character on the board at specified position
+/**
+ * Function: displayCharAt()
+ * Purpose: displays a character on the board at specified position
+ * Author:
+**/
 void displayCharAt(int yPos, int xPos, chtype ch) {
     mvwaddch(stdscr, yPos, xPos, ch);
 }
 
+/**
+ * Function: displayObj()
+ * Purpose: displays a displayable object
+ * Author:
+**/
 void displayObj(dObj obj) {
     displayCharAt(obj.y, obj.x, obj.ch);
 }
 
+/**
+ * Function: checkInput()
+ * Purpose: checks if a key is being held and parses that into a variable
+ * Author: Corwin & Tom
+**/
 void checkInput() {
     chtype input = wgetch(stdscr);
 
@@ -150,6 +178,11 @@ void checkInput() {
     }
 }
 
+/**
+ * Function: trophy()
+ * Purpose:
+ * Author:
+**/
 dObj trophy(int y, int x) { //used to create trophy object
     randNumber = (rand()%9)+1;
     trophy_time = (rand()%9)+1;
@@ -158,6 +191,11 @@ dObj trophy(int y, int x) { //used to create trophy object
     return trophy;
 }
 
+/**
+ * Function: updateState()
+ * Purpose:
+ * Author:
+**/
 void updateState() {
     //updating the snake
     dObj nextSnakePeice = nextHead();
@@ -205,6 +243,11 @@ void updateState() {
     }
 }
 
+/**
+ * Function: updateDisplay()
+ * Purpose: refreshes the window
+ * Author:
+**/
 void updateDisplay() {
     wrefresh(stdscr);
 }
@@ -219,19 +262,31 @@ struct s_node {
 } *front=NULL, *back=NULL;
 typedef struct s_node node;
 
-// Returns the object at the front w/o dequeing
+/**
+ * Function: peek()
+ * Purpose: Returns the object at the front w/o dequeing
+ * Author:
+**/
 dObj* peek( ) {
     return front == NULL ? NULL : front->object;
 }
 
-// Returns the object at the front and dequeues
+/**
+ * Function: dequeue()
+ * Purpose: Returns the object at the front and dequeues
+ * Author:
+**/
 dObj* dequeue( ) {
     node *oldfront = front;
     front = front->next;
     return oldfront->object;
 }
 
-// Queues a object at the back
+/**
+ * Function: enqueue()
+ * Purpose: Queues a object at the back
+ * Author:
+**/
 void enqueue( dObj object )
 {
    dObj *newobject   = (dObj*)  malloc( sizeof( object ) );
@@ -251,38 +306,68 @@ void enqueue( dObj object )
    }
 }
 
+/**
+ * Function: peekBack()
+ * Purpose: gets the node from the back of the list without dequeing
+ * Author:
+**/
 dObj* peekBack( ) {
     return back == NULL ? NULL : back->object;
 }
 // --------------------------------------------------------------------------
 // End Queue stuff
 
-
-void snake() { //currently not being used, probably don't need it
-    currentDirection = down;
-}
-
+/**
+ * Function: addSnakePiece()
+ * Purpose: adds a snake piece to the queue
+ * Author:
+**/
 void addSnakePiece(dObj piece) {
     enqueue(piece);
 }
 
+/**
+ * Function: removeSnakePiece()
+ * Purpose: removes a snake piece from the queue
+ * Author:
+**/
 void removeSnakePiece() {
     dequeue();
 }
 
+/**
+ * Function: snakeTail()
+ * Purpose: gets the tail of the snake
+ * Author:
+**/
 dObj snakeTail() {
     return *peek();
 }
 
+/**
+ * Function: snakeHead()
+ * Purpose: gets the head of the snake
+ * Author:
+**/
 dObj snakeHead() {
     return *peekBack();
 }
 
+/**
+ * Function: getDirection()
+ * Purpose: gets the direction the snake is travelling
+ * Author:
+**/
 enum Direction getDirection() {
     return currentDirection;
 }
 
-void setDirection(enum Direction newDirection) { //detects if we are reversing the direction and ends game
+/**
+ * Function: setDirection()
+ * Purpose: detects if we are reversing the direction and ends game
+ * Author:
+**/
+void setDirection(enum Direction newDirection) {
     int num = currentDirection + newDirection;
     if(num == 1 || num == 5) {
         gameOver = true;
@@ -291,6 +376,11 @@ void setDirection(enum Direction newDirection) { //detects if we are reversing t
     currentDirection = newDirection;
 }
 
+/**
+ * Function: nextHead()
+ * Purpose: 
+ * Author:
+**/
 dObj nextHead() {
     int currRow = snakeHead().y;
     int currCol = snakeHead().x;
@@ -313,20 +403,39 @@ dObj nextHead() {
     return newSnakeHead;
 }
 
-
-
-dObj empty(int y, int x) { //used to empty out a spot on the board
+/**
+ * Function: empty()
+ * Purpose: used to empty out a spot on the board
+ * Author:
+**/
+dObj empty(int y, int x) {
     dObj blank = {y, x, ' '};
     return blank;
 }
 
-chtype getCharAt(int y, int x) { //gets characters present at specified posiiton on board
+/**
+ * Function: getCharAt()
+ * Purpose: gets characters present at specified posiiton on board
+ * Author:
+**/
+chtype getCharAt(int y, int x) {
     return mvwinch(stdscr, y, x);
 }
-void getEmptyCoords(int *y, int *x) { //gets a set of random empty coords for trophy
+
+/**
+ * Function: getEmptyCoords()
+ * Purpose: gets a set of random empty coords for trophy
+ * Author:
+**/
+void getEmptyCoords(int *y, int *x) {
     while (getCharAt(*y = rand() % (BOARD_ROWS-1), *x = rand() % (BOARD_COLUMNS-1)) != ' ');
 }
 
+/**
+ * Function: displayMessage()
+ * Purpose: blanks the row, then writes whatever message was passed
+ * Author:
+**/
 void displayMessage(char* str) { //displays a generic message on board
     move(BOARD_ROWS/2, 5);//goto the line
     hline(' ', BOARD_COLUMNS-5);//blank the line
@@ -335,6 +444,11 @@ void displayMessage(char* str) { //displays a generic message on board
     refresh();
 }
 
+/**
+ * Function: exitGame()
+ * Purpose: exits the game cleanly
+ * Author: Corwin Van Deusen
+**/
 void exitGame() {
     displayMessage("Exiting");
     usleep(1300000);
