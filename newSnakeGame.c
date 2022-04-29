@@ -237,8 +237,6 @@ void updateState() {
         snakeSize += randNumber;
         increaseLengthBy += randNumber;
         trophyPresent = false;
-        // for(int i=1; i<randNumber;i++)
-        //     addSnakePiece(nextSnakePeice);
     }
     else {
         gameOver = true;
